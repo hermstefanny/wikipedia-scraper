@@ -28,6 +28,7 @@ def get_leaders():
         countries_resp = requests.get(
             countries_url, cookies={"user_cookie": user_cookie}
         )
+    print("Cookie fetched")
 
     # Getting the country information
     countries = countries_resp.json()
@@ -41,6 +42,8 @@ def get_leaders():
         )
         leaders_per_country[country] = country_resp.text
 
+    print("Data from the API fetched...")
+
     # Obtaining the Wikipedia url
     for country, leaders in leaders_per_country.items():
         leaders_dict = json.loads(leaders)
@@ -52,6 +55,7 @@ def get_leaders():
 
     # Creating a session to send the wikipedia URLs
     with requests.Session() as s:
+        print("Session to get the parragraphs from Wikipedia initliazed...")
         for leader in all_leaders:
             wiki_parragraph = get_first_paragraph(leader["wikipedia_url"], s)
             leader["wiki_parragraph"] = wiki_parragraph
@@ -62,7 +66,7 @@ def get_leaders():
 def get_first_paragraph(wikipedia_url, session):
 
     leaders_wiki = session.get(wikipedia_url)
-    soup_leaders = BeautifulSoup(leaders_wiki.content, "html")
+    soup_leaders = BeautifulSoup(leaders_wiki.content, "html.parser")
 
     parragraphs = []
     for p in soup_leaders.find_all("p"):
@@ -94,6 +98,7 @@ def save(leaders_per_country):
 
 def main():
     leaders = get_leaders()
+    print("Leaders obtained")
     save(leaders)
 
 
