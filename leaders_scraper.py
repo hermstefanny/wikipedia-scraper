@@ -15,12 +15,21 @@ def get_leaders():
     leaders_per_country = dict()
     all_leaders = []
 
-    # Getting the cookie
+    # Getting the cookie and fetching countries
     cookie_resp = requests.get(cookie_url)
     user_cookie = cookie_resp.cookies["user_cookie"]
 
-    # Getting the country information
     countries_resp = requests.get(countries_url, cookies={"user_cookie": user_cookie})
+
+    # Checking the cookie status
+    if cookie_resp.status_code != 200:
+        cookie_resp = requests.get(cookie_url)
+        user_cookie = cookie_resp.cookies["user_cookie"]
+        countries_resp = requests.get(
+            countries_url, cookies={"user_cookie": user_cookie}
+        )
+
+    # Getting the country information
     countries = countries_resp.json()
 
     # Getting leaders for each country
@@ -68,7 +77,7 @@ def get_first_paragraph(wikipedia_url, session):
 
     # Clean the text with regex
 
-    pattern = "\\n|\S*ⓘ\S*|/xa0|\[.{0,3}?\]|"
+    pattern = "\\n|\S*ⓘ\S*|/xa0|\[.{0,3}?\]|/"
     clean_parragraph = re.sub(pattern, "", raw_first_p)
 
     return clean_parragraph
@@ -80,11 +89,7 @@ def save(leaders_per_country):
     with open("leaders.json", "w", encoding="utf-8") as outfile:
         outfile.write(json_leaders)
 
-    with open("leaders.json", "r", encoding="utf-8") as file:
-        content = file.read()
-
-    print("The following content has been saved to 'leaders.json' :")
-    print(content)
+    print("The data has been saved to 'leaders.json' :")
 
 
 def main():
