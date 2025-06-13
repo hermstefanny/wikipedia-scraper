@@ -81,7 +81,7 @@ def get_first_paragraph(wikipedia_url, session):
 
     # Clean the text with regex
 
-    pattern = "\\n|\S*ⓘ\S*|/xa0|\[.{0,3}?\]|/"
+    pattern = "\\n|\S*ⓘ\S*|xa0|\[.{0,3}?\]|/"
     clean_parragraph = re.sub(pattern, "", raw_first_p)
 
     return clean_parragraph
